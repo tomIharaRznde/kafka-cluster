@@ -140,7 +140,7 @@ spec:
           value: "8999"
         - name: TZ
           value: America/Sao_Paulo
-        image: tomihararznde/k8skafka:2.11-2.2.0
+        image: tomihararznde/kafka-cluster:2.11-2.2.0
         imagePullPolicy: Always
         name: kafka-infra
         ports:
