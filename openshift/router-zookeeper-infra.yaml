@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Route
+metadata:
+  annotations:
+    nginx.router.openshift.io/balance: round_robin
+    nginx.router.openshift.io/port: "9097"
+    nginx.router.openshift.io/protocol: tcp
+  creationTimestamp: null
+  labels:
+    app: zookeeper
+  name: zk-metrics.INTERNAL_DNS
+spec:
+  host: zk-metrics.INTERNAL_DNS
+  port:
+    targetPort: client
+  to:
+    kind: Service
+    name: zookeeper-infra
+    weight: 100
+  wildcardPolicy: None
+status:
+  ingress:
+  - conditions:
+    - status: "True"
+      type: Admitted
+    host: zk-metrics.INTERNAL_DNS
+    routerName: nginx.router.tcp.udp
+    wildcardPolicy: None

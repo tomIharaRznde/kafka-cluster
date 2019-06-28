@@ -1,0 +1,107 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  creationTimestamp: null
+  generation: 14
+  labels:
+    app: KafkaCluster
+  name: zookeeper-infra
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: zookeeper-infra
+  serviceName: zookeeper-hs-infra
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: zookeeper-infra
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - start-zookeeper 
+          --servers=3 
+          --data_dir=/var/lib/zookeeper/data 
+          --data_log_dir=/var/lib/zookeeper/data/log
+          --conf_dir=/opt/zookeeper/conf 
+          --client_port=2181 
+          --election_port=3888 
+          --server_port=2888
+          --tick_time=10000 
+          --init_limit=100 
+          --sync_limit=5 
+          --heap=512M 
+          --max_client_cnxns=4000
+          --snap_retain_count=3 
+          --purge_interval=12 
+          --max_session_timeout=40000 
+          --min_session_timeout=4000
+          --log_level=WARN
+        image: k8s.gcr.io/kubernetes-zookeeper:1.0-3.4.10
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - zookeeper-ready 2181
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: zookeeper-infra
+        ports:
+        - containerPort: 2181
+          name: client
+          protocol: TCP
+        - containerPort: 2888
+          name: server
+          protocol: TCP
+        - containerPort: 3888
+          name: leader-election
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - zookeeper-ready 2181
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: "2"
+            memory: 6Gi
+          requests:
+            cpu: 1m
+            memory: 1Gi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/zookeeper
+          name: datadir
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        node-role.kubernetes.io/compute: "true"
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      terminationGracePeriodSeconds: 30
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 4Gi

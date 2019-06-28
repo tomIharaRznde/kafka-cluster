@@ -1,0 +1,34 @@
+apiVersion: v1
+data:
+  log4j.properties: "# Licensed to the Apache Software Foundation (ASF) under one
+    or more\r\n# contributor license agreements.  See the NOTICE file distributed
+    with\r\n# this work for additional information regarding copyright ownership.\r\n#
+    The ASF licenses this file to You under the Apache License, Version 2.0\r\n# (the
+    \"License\"); you may not use this file except in compliance with\r\n# the License.
+    \ You may obtain a copy of the License at\r\n#\r\n#    http://www.apache.org/licenses/LICENSE-2.0\r\n#\r\n#
+    Unless required by applicable law or agreed to in writing, software\r\n# distributed
+    under the License is distributed on an \"AS IS\" BASIS,\r\n# WITHOUT WARRANTIES
+    OR CONDITIONS OF ANY KIND, either express or implied.\r\n# See the License for
+    the specific language governing permissions and\r\n# limitations under the License.\r\n\r\nlog4j.rootLogger=${logging.level},
+    stdout\r\n\r\nlog4j.appender.stdout=org.apache.log4j.ConsoleAppender\r\nlog4j.appender.stdout.layout=org.apache.log4j.PatternLayout\r\nlog4j.appender.stdout.layout.ConversionPattern=[%d]
+    %p %m (%c)%n\r\n\r\nlog4j.appender.kafkaAppender=org.apache.log4j.DailyRollingFileAppender\r\nlog4j.appender.kafkaAppender.DatePattern='.'yyyy-MM-dd-HH\r\nlog4j.appender.kafkaAppender.File=${kafka.logs.dir}/server.log\r\nlog4j.appender.kafkaAppender.layout=org.apache.log4j.PatternLayout\r\nlog4j.appender.kafkaAppender.layout.ConversionPattern=[%d]
+    %p %m (%c)%n\r\n\r\nlog4j.appender.stateChangeAppender=org.apache.log4j.DailyRollingFileAppender\r\nlog4j.appender.stateChangeAppender.DatePattern='.'yyyy-MM-dd-HH\r\nlog4j.appender.stateChangeAppender.File=${kafka.logs.dir}/state-change.log\r\nlog4j.appender.stateChangeAppender.layout=org.apache.log4j.PatternLayout\r\nlog4j.appender.stateChangeAppender.layout.ConversionPattern=[%d]
+    %p %m (%c)%n\r\n\r\nlog4j.appender.requestAppender=org.apache.log4j.DailyRollingFileAppender\r\nlog4j.appender.requestAppender.DatePattern='.'yyyy-MM-dd-HH\r\nlog4j.appender.requestAppender.File=${kafka.logs.dir}/kafka-request.log\r\nlog4j.appender.requestAppender.layout=org.apache.log4j.PatternLayout\r\nlog4j.appender.requestAppender.layout.ConversionPattern=[%d]
+    %p %m (%c)%n\r\n\r\nlog4j.appender.cleanerAppender=org.apache.log4j.DailyRollingFileAppender\r\nlog4j.appender.cleanerAppender.DatePattern='.'yyyy-MM-dd-HH\r\nlog4j.appender.cleanerAppender.File=${kafka.logs.dir}/log-cleaner.log\r\nlog4j.appender.cleanerAppender.layout=org.apache.log4j.PatternLayout\r\nlog4j.appender.cleanerAppender.layout.ConversionPattern=[%d]
+    %p %m (%c)%n\r\n\r\nlog4j.appender.controllerAppender=org.apache.log4j.DailyRollingFileAppender\r\nlog4j.appender.controllerAppender.DatePattern='.'yyyy-MM-dd-HH\r\nlog4j.appender.controllerAppender.File=${kafka.logs.dir}/controller.log\r\nlog4j.appender.controllerAppender.layout=org.apache.log4j.PatternLayout\r\nlog4j.appender.controllerAppender.layout.ConversionPattern=[%d]
+    %p %m (%c)%n\r\n\r\nlog4j.appender.authorizerAppender=org.apache.log4j.DailyRollingFileAppender\r\nlog4j.appender.authorizerAppender.DatePattern='.'yyyy-MM-dd-HH\r\nlog4j.appender.authorizerAppender.File=${kafka.logs.dir}/kafka-authorizer.log\r\nlog4j.appender.authorizerAppender.layout=org.apache.log4j.PatternLayout\r\nlog4j.appender.authorizerAppender.layout.ConversionPattern=[%d]
+    %p %m (%c)%n\r\n\r\n# Turn on all our debugging info\r\n#log4j.logger.kafka.producer.async.DefaultEventHandler=DEBUG,
+    kafkaAppender\r\n#log4j.logger.kafka.client.ClientUtils=DEBUG, kafkaAppender\r\n#log4j.logger.kafka.perf=DEBUG,
+    kafkaAppender\r\n#log4j.logger.kafka.perf.ProducerPerformance$ProducerThread=DEBUG,
+    kafkaAppender\r\n#log4j.logger.org.I0Itec.zkclient.ZkClient=DEBUG\r\n#log4j.logger.kafka=INFO,
+    stdout\r\n\r\nlog4j.logger.kafka.network.RequestChannel$=${logging.level}, stdout\r\nlog4j.additivity.kafka.network.RequestChannel$=false\r\n\r\n#log4j.logger.kafka.network.Processor=TRACE,
+    requestAppender\r\n#log4j.logger.kafka.server.KafkaApis=TRACE, requestAppender\r\n#log4j.additivity.kafka.server.KafkaApis=false\r\nlog4j.logger.kafka.request.logger=${logging.level},
+    stdout\r\nlog4j.additivity.kafka.request.logger=false\r\n\r\nlog4j.logger.kafka.controller=${logging.level},
+    stdout\r\nlog4j.additivity.kafka.controller=false\r\n\r\nlog4j.logger.kafka.log.LogCleaner=${logging.level},
+    stdout\r\nlog4j.additivity.kafka.log.LogCleaner=false\r\n\r\nlog4j.logger.state.change.logger=${logging.level},
+    stdout\r\nlog4j.additivity.state.change.logger=false\r\n\r\n#Change this to debug
+    to get the actual audit log for authorizer.\r\nlog4j.logger.kafka.authorizer.logger=${logging.level},
+    stdout\r\nlog4j.additivity.kafka.authorizer.logger=false"
+kind: ConfigMap
+metadata:
+  name: config-file-kafka-log4j

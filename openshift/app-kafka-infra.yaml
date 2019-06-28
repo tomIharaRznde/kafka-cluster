@@ -1,0 +1,211 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  labels:
+    app: KafkaCluster
+  name: kafka-infra
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kafka-infra
+  serviceName: kafka-infra
+  template:
+    metadata:
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+      labels:
+        app: kafka-infra
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - 'echo ${KAFKA_INFRA_0_SERVICE_HOST} kafka-broker0.INTERNAL_DNS >> /etc/hosts;
+          echo ${KAFKA_INFRA_1_SERVICE_HOST} kafka-broker1.INTERNAL_DNS >> /etc/hosts;
+          echo ${KAFKA_INFRA_2_SERVICE_HOST} kafka-broker2.INTERNAL_DNS >> /etc/hosts;
+          exec kafka-server-start.sh /opt/kafka/config/server.properties 
+          --override log.dirs=/var/lib/kafka/data/topics --override broker.id=${HOSTNAME##*-}
+          --override listener.security.protocol.map=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+          NTERNAL_DNS--override advertised.listeners=INTERNAL://${HOSTNAME}.kafka-infra.monitoring.svc.cluster.local:9092,EXTERNAL://kafka-broker${HOSTNAME##*-}.:3100${HOSTNAME##*-}
+          --override  zookeeper.connect=zookeeper-infra-0.zookeeper-hs-infra.monitoring.svc.cluster.local:2181,zookeeper-infra-1.zookeeper-hs-infra.monitoring.svc.cluster.local:2181,zookeeper-infra-2.zookeeper-hs-infra.monitoring.svc.cluster.local:2181
+          --override log.retention.bytes=-1 
+          --override log.retention.hours=12 
+          --override listeners=INTERNAL://:9092,EXTERNAL://:3100${HOSTNAME##*-} 
+          --override inter.broker.listener.name=INTERNAL
+          --override auto.create.topics.enable=true 
+          --override auto.leader.rebalance.enable=true
+          --override num.partitions=3 
+          --override default.replication.factor=3 
+          --override min.insync.replicas=1 
+          --override offsets.topic.replication.factor=2 
+          --override num.replica.fetchers=3 
+          --override transaction.state.log.min.isr=3 
+          --override log.roll.hours=12 
+          --override background.threads=10 
+          --override compression.type=producer
+          --override delete.topic.enable=true 
+          --override leader.imbalance.check.interval.seconds=300
+          --override leader.imbalance.per.broker.percentage=10 
+          --override log.flush.interval.messages=9223372036854775807
+          --override log.flush.offset.checkpoint.interval.ms=60000 
+          --override log.flush.scheduler.interval.ms=9223372036854775807
+          --override log.roll.jitter.hours=0 
+          --override log.segment.bytes=1073741824
+          --override log.segment.delete.delay.ms=60000 
+          --override message.max.bytes=1000012
+          --override num.io.threads=8 
+          --override num.network.threads=3 
+          --override num.recovery.threads.per.data.dir=1 
+          --override offset.metadata.max.bytes=4096
+          --override offsets.commit.required.acks=-1 
+          --override offsets.commit.timeout.ms=5000
+          --override offsets.load.buffer.size=5242880 
+          --override offsets.retention.check.interval.ms=600000
+          --override offsets.retention.minutes=1440 
+          --override offsets.topic.compression.codec=0
+          --override offsets.topic.num.partitions=50 
+          --override offsets.topic.segment.bytes=104857600
+          --override queued.max.requests=500 
+          --override quota.consumer.default=9223372036854775807
+          --override quota.producer.default=9223372036854775807 
+          --override replica.fetch.min.bytes=1
+          --override replica.fetch.wait.max.ms=500 
+          --override replica.high.watermark.checkpoint.interval.ms=5000
+          --override replica.lag.time.max.ms=10000 
+          --override replica.socket.receive.buffer.bytes=65536
+          --override replica.socket.timeout.ms=30000 
+          --override request.timeout.ms=30000
+          --override socket.receive.buffer.bytes=102400 
+          --override socket.request.max.bytes=104857600
+          --override socket.send.buffer.bytes=102400 
+          --override unclean.leader.election.enable=true
+          --override zookeeper.session.timeout.ms=15000 
+          --override zookeeper.sync.time.ms=10000
+          --override  zookeeper.connection.timeout.ms=30000 
+          --override zookeeper.set.acl=false
+          --override broker.id.generation.enable=true 
+          --override connections.max.idle.ms=600000
+          --override controlled.shutdown.enable=true 
+          --override controlled.shutdown.max.retries=3
+          --override controlled.shutdown.retry.backoff.ms=5000 
+          --override controller.socket.timeout.ms=30000
+          --override fetch.purgatory.purge.interval.requests=1000 
+          --override group.max.session.timeout.ms=300000
+          --override group.min.session.timeout.ms=3000 
+          --override inter.broker.protocol.version=0.10.2-IV0
+          --override log.cleaner.backoff.ms=15000 
+          --override log.cleaner.dedupe.buffer.size=134217728
+          --override log.cleaner.delete.retention.ms=86400000 
+          --override log.cleaner.enable=true
+          --override log.cleaner.io.buffer.load.factor=0.9 
+          --override log.cleaner.io.buffer.size=524288
+          --override log.cleaner.io.max.bytes.per.second=1.7976931348623157E308 
+          --override log.cleaner.min.cleanable.ratio=0.5 
+          --override log.cleaner.min.compaction.lag.ms=0
+          --override log.cleaner.threads=1 
+          --override log.cleanup.policy=delete 
+          --override log.index.interval.bytes=4096 
+          --override log.index.size.max.bytes=10485760
+          --override log.message.timestamp.difference.max.ms=9223372036854775807 
+          --override log.message.timestamp.type=CreateTime 
+          --override log.preallocate=false 
+          --override log.retention.check.interval.ms=300000 
+          --override max.connections.per.ip=2147483647
+          --override producer.purgatory.purge.interval.requests=1000 
+          --override replica.fetch.backoff.ms=1000
+          --override replica.fetch.max.bytes=1048576 
+          --override replica.fetch.response.max.bytes=10485760
+          --override reserved.broker.max.id=1000'
+        env:
+        - name: KAFKA_HEAP_OPTS
+          value: -Xms1g 
+                 -Xmx4g 
+                 -XX:MetaspaceSize=96m 
+                 -XX:+UseG1GC 
+                 -XX:MaxGCPauseMillis=20
+                 -XX:InitiatingHeapOccupancyPercent=35 
+                 -XX:G1HeapRegionSize=16M 
+                 -XX:MinMetaspaceFreeRatio=50
+                 -XX:MaxMetaspaceFreeRatio=80
+        - name: KAFKA_OPTS
+          value: -Dlogging.level=WARN
+        - name: KAFKA_JMX_OPTS
+          value: -Djava.rmi.server.hostname=${HOSTNAME##*-} 
+                 -Dcom.sun.management.jmxremote.local.only=false
+                 -Dcom.sun.management.jmxremote=true 
+                 -Dcom.sun.management.jmxremote.authenticate=false
+                 -Dcom.sun.management.jmxremote.ssl=false
+        - name: JMX_PORT
+          value: "8999"
+        - name: TZ
+          value: America/Sao_Paulo
+        image: tomihararznde/k8skafka:2.11-2.2.0
+        imagePullPolicy: Always
+        name: kafka-infra
+        ports:
+        - containerPort: 9092
+          name: internal
+          protocol: TCP
+        - containerPort: 9097
+          name: external
+          protocol: TCP
+        - containerPort: 31000
+          name: broker0
+          protocol: TCP
+        - containerPort: 31001
+          name: broker1
+          protocol: TCP
+        - containerPort: 31002
+          name: broker2
+          protocol: TCP
+        - containerPort: 8999
+          name: jmx
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: 9092
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: 1m
+            memory: 1Gi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/kafka/config/log4j.properties
+          name: config-log4j
+          readOnly: true
+          subPath: log4j.properties
+        - mountPath: /var/lib/kafka
+          name: datadir
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        node-role.kubernetes.io/compute: "true"
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsUser: 0
+      terminationGracePeriodSeconds: 300
+      volumes:
+      - emptyDir: {}
+        name: datadir
+      - configMap:
+          defaultMode: 509
+          name: config-file-kafka-log4j
+        name: config-log4j
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 4Gi
