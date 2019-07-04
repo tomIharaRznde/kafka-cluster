@@ -37,7 +37,7 @@ spec:
                       values:
                         - zookeeper-infra
                 topologyKey: kubernetes.io/hostname
-              weight: 1
+              weight: 2
       containers:
       - command:
         - sh
