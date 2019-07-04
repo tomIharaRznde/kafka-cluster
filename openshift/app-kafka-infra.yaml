@@ -17,6 +17,26 @@ spec:
       labels:
         app: kafka-infra
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: component
+                    operator: In
+                    values:
+                      - kafka
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - kafka-infra
+                topologyKey: kubernetes.io/hostname
+              weight: 2
       containers:
       - command:
         - sh
