@@ -18,6 +18,26 @@ spec:
       labels:
         app: zookeeper-infra
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: component
+                    operator: In
+                    values:
+                      - kafka
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - zookeeper-infra
+                topologyKey: kubernetes.io/hostname
+              weight: 1
       containers:
       - command:
         - sh
