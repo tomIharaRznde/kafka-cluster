@@ -67,7 +67,7 @@ spec:
             command:
             - sh
             - -c
-            - zookeeper-ready 2181
+            - if [ "$(echo 'ruok' | nc localhost 2181 | grep 'imok')" = "imok" ]; then echo "0"; else echo "1"; fi;
           failureThreshold: 3
           initialDelaySeconds: 10
           periodSeconds: 10
