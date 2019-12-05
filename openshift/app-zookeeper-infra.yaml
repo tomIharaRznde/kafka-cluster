@@ -67,7 +67,9 @@ spec:
             command:
             - sh
             - -c
-            - if [ "$(echo 'ruok' | nc localhost 2181 | grep 'imok')" = "imok" ]; then echo "0"; else echo "1"; fi;
+            - 'if [ "$(echo ''stat'' | nc localhost 2181 | grep ''Mode'')" = "Mode:
+              leader" ] || [ "$(echo ''stat'' | nc localhost 2181 | grep ''Mode'')"
+              = "Mode: follower" ]; then echo "0"; else echo "1"; fi;'
           failureThreshold: 3
           initialDelaySeconds: 10
           periodSeconds: 10
